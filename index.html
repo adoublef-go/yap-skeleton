@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nats Cluster</title>
+    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+    <style>
+        html {
+            color-scheme: dark light;
+        }
+    </style>
+</head>
+
+<body hx-boost="true">
+    <header>
+        <h1>Cluster Example</h1>
+        <h2>Server connected to {{env "FLY_REGION"}}</h2>
+    </header>
+    <main>
+        <form hx-post="/submit" hx-swap="none">
+            <input type="text" name="message" placeholder="Enter a message" />
+            <input type="submit" value="Submit" />
+        </form>
+        <ul></ul>
+    </main>
+    <script>
+        new EventSource("/sse").onmessage = (event) => {
+            const ul = document.querySelector("ul");
+            ul.innerHTML += `<li>Received: ${event.data}</li>`;
+        };
+    </script>
+</body>
+
+</html>

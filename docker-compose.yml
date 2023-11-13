@@ -1,0 +1,55 @@
+version: "3.9"
+
+services:
+    nginx:
+      container_name: nats-nginx
+      build:
+        context: ./nginx
+        target: runtime
+      ports:
+        - 8080:80
+      networks:
+        - nats
+
+    lhr:
+        container_name: nats-lhr
+        build:
+            context: .
+            target: runtime
+        command: ./a -cluster=nats-route://lhr:4248
+        environment:
+          - FLY_REGION=lhr
+        ports:
+          # - 8080:8080
+          - 8222:8222
+        networks:
+            - nats
+
+    iad:
+        container_name: nats-iad
+        build:
+            context: .
+            target: runtime
+        environment:
+          - FLY_REGION=iad
+        command: ./a -cluster=nats-route://lhr:4248
+        # ports:
+        #   - 8081:8080
+        networks:
+            - nats
+
+    syd:
+        container_name: nats-syd
+        build:
+            context: .
+            target: runtime
+        environment:
+          - FLY_REGION=syd
+        command: ./a -cluster=nats-route://lhr:4248
+        # ports:
+        #   - 8082:8080
+        networks:
+            - nats
+
+networks:
+    nats:
